@@ -1,0 +1,45 @@
+buildscript {
+	ext {
+		springBootVersion = '1.4.2.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+jar {
+	baseName = 'exomiser_allele_store'
+	version = '0.0.1-SNAPSHOT'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+	mavenCentral()
+}
+
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter')
+	compile('org.springframework.data:spring-data-commons')
+	compile('com.orientechnologies:orientdb-graphdb:2.2.13')
+	compile('org.apache.commons:commons-vfs2:2.0')
+	compile('org.mapdb:mapdb:3.0.2')
+	compile('org.apache.lucene:lucene-core:6.3.0')
+    compile('org.apache.lucene:lucene-queryparser:6.3.0')
+//    compile('org.apache.lucene:lucene-spatial-extras:6.3.0')
+//	compile('org.monarchinitiative:exomiser-core:7.3.0-SNAPSHOT')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+wrapper {
+    gradleVersion = '3.3'
+}
