@@ -75,8 +75,16 @@ public class AlleleAppendingFileWriter {
     }
 
     private String toLine(Allele allele) {
-        return allele.getChr() + "\t" + allele.getPos() + "\t" + allele.getRsId() + "\t" + allele.getRef() + "\t" + allele
-                .getAlt() + "\t" + ".\t.\t" + makeInfoFields(allele) + "\n";
+        StringJoiner stringJoiner = new StringJoiner("\t");
+        stringJoiner.add(Integer.toString(allele.getChr()));
+        stringJoiner.add(Integer.toString(allele.getPos()));
+        stringJoiner.add(allele.getRsId());
+        stringJoiner.add(allele.getRef());
+        stringJoiner.add(allele.getAlt());
+        stringJoiner.add(".");
+        stringJoiner.add(".");
+        stringJoiner.add(makeInfoFields(allele)+ "\n");
+        return stringJoiner.toString();
     }
 
     @NotNull
@@ -123,7 +131,7 @@ public class AlleleAppendingFileWriter {
                 logger.info("Reading chromosome {}", i);
                 Path chr = chromosomePaths.get(i);
                 Map<String, Allele> alleleStore = readAndMergeAlleles(chr);
-                logger.info("Writing merged chromosome {}", i);
+                logger.info("Writing merged chromosome {} to {}", i, merged);
                 alleleStore.values().stream().sorted().forEach(writeAlleleLine(bufferedWriter));
             }
         } catch (IOException ex) {
