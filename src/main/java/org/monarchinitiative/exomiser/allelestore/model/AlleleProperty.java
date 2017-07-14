@@ -1,7 +1,7 @@
 package org.monarchinitiative.exomiser.allelestore.model;
 
 import java.util.EnumSet;
-import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @author Jules Jacobsen <j.jacobsen@qmul.ac.uk>
@@ -25,7 +25,7 @@ public enum AlleleProperty {
     POLYPHEN,
     MUT_TASTER;
 
-    public static final EnumSet<AlleleProperty> FREQUENCY_PROPERTIES = EnumSet.range(KG, EXAC_SAS);
-    public static final EnumSet<AlleleProperty> PATHOGENIC_PROPERTIES = EnumSet.range(SIFT, MUT_TASTER);
+    public static final Set<AlleleProperty> FREQUENCY_PROPERTIES = EnumSet.range(KG, EXAC_SAS);
+    public static final Set<AlleleProperty> PATHOGENIC_PROPERTIES = EnumSet.range(SIFT, MUT_TASTER);
 
 }
