@@ -78,9 +78,9 @@ public class LuceneAlleleIndexerTest {
         System.out.println("Found " + docs.totalHits + " hits.");
         for (int i = 0; i < hits.length; ++i) {
             int docId = hits[i].doc;
-            Document d = searcher.doc(docId);
-            System.out.println(allele.getChr() + "\t" + allele.getPos() + "\t" + allele.getRef() + "\t" + allele.getAlt() + "\t" + d
-                    .get("rsId") + "\t" + d.get(AlleleProperty.KG.name()));
+            Document doc = searcher.doc(docId);
+            System.out.println(allele.getChr() + "\t" + allele.getPos() + "\t" + allele.getRef() + "\t" + allele.getAlt() + "\t" + doc
+                    .get("rsId") + "\t" + AlleleProperty.KG + "=" + doc.get(AlleleProperty.KG.name()));
         }
 
         // reader can only be closed when there

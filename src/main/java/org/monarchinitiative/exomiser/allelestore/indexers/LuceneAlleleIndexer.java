@@ -4,6 +4,7 @@ import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.jetbrains.annotations.NotNull;
 import org.monarchinitiative.exomiser.allelestore.model.Allele;
 import org.monarchinitiative.exomiser.allelestore.model.AlleleProperty;
 import org.monarchinitiative.exomiser.allelestore.parsers.AlleleParser;
@@ -27,48 +28,33 @@ public class LuceneAlleleIndexer implements AlleleIndexer {
 
     private static final Logger logger = LoggerFactory.getLogger(LuceneAlleleIndexer.class);
 
-    private final Directory index;
     private final IndexWriter indexWriter;
 
     public LuceneAlleleIndexer(Path indexPath) {
         try {
-            this.index = FSDirectory.open(indexPath);
-            IndexWriterConfig indexWriterConfig = getDefaultConfig();
-            this.indexWriter = createIndexWriter(index, indexWriterConfig);
+            FSDirectory directory = openDirectory(indexPath);
+            this.indexWriter = new IndexWriter(directory, defaultIndexWriterConfig());
         } catch (IOException e) {
             logger.error("Error opening index.", e);
             throw new RuntimeException();
         }
     }
 
-    public LuceneAlleleIndexer(Directory index) {
-        this.index = index;
-        IndexWriterConfig indexWriterConfig = getDefaultConfig();
-        this.indexWriter = createIndexWriter(index, indexWriterConfig);
+    @NotNull
+    private FSDirectory openDirectory(Path indexPath) throws IOException {
+        return FSDirectory.open(indexPath);
     }
 
-    IndexWriter getIndexWriter() {
-        return indexWriter;
-    }
-
-    private IndexWriter createIndexWriter(Directory index, IndexWriterConfig indexWriterConfig) {
-        try (IndexWriter indexWriter = new IndexWriter(index, indexWriterConfig)) {
-            return indexWriter;
-        } catch (IOException e) {
-            logger.error("Error opening IndexWriter.", e);
-        }
-        return null;
-    }
-
-    private void closeIndexWriter() {
+    LuceneAlleleIndexer(Directory directory) {
         try {
-            indexWriter.close();
-        } catch (IOException ex) {
-            logger.error("Error closing IndexWriter.", ex);
+            this.indexWriter = new IndexWriter(directory, defaultIndexWriterConfig());
+        } catch (IOException e) {
+            logger.error("Error opening index.", e);
+            throw new RuntimeException();
         }
     }
 
-    private IndexWriterConfig getDefaultConfig() {
+    private static IndexWriterConfig defaultIndexWriterConfig() {
         IndexWriterConfig config = new IndexWriterConfig(null);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
         ((TieredMergePolicy) config.getMergePolicy()).setMaxMergedSegmentMB(5);
@@ -87,7 +73,7 @@ public class LuceneAlleleIndexer implements AlleleIndexer {
                     alleleCount++;
                     writeAllele(allele);
                     if (alleleCount % 1000000 == 0) {
-                        logger.info("Now on chr {} - added {} allele docs", allele.getChr(), alleleCount);
+                        logger.info("Indexing chr {} - added {} allele docs", allele.getChr(), alleleCount);
                         indexWriter.commit();
                     }
                 }
@@ -122,6 +108,18 @@ public class LuceneAlleleIndexer implements AlleleIndexer {
             doc.add(new StoredField(entry.getKey().name(), entry.getValue()));
         }
         return doc;
+    }
+
+    IndexWriter getIndexWriter() {
+        return indexWriter;
+    }
+
+    private void closeIndexWriter() {
+        try {
+            indexWriter.close();
+        } catch (IOException ex) {
+            logger.error("Error closing IndexWriter.", ex);
+        }
     }
 
 }
