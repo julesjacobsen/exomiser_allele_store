@@ -1,6 +1,8 @@
 package org.monarchinitiative.exomiser.allelestore.parsers;
 
+import org.jetbrains.annotations.NotNull;
 import org.monarchinitiative.exomiser.allelestore.model.Allele;
+import org.monarchinitiative.exomiser.allelestore.model.AllelePosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,17 +57,19 @@ public abstract class VcfAlleleParser implements AlleleParser {
         //should be skipped
         String[] alts = fields[4].toUpperCase().split(",");
 
-        // VCF files and Annovar-style annotations use different nomenclature for
-        // indel variants. We use Annovar.
-        //TODO - now that we use the new Jannovar which uses a 0-based co-ordinate system investigate is this is necessary
-//       transformVCF2AnnovarCoordinates();
         List<Allele> alleles = new ArrayList<>();
         for (int i = 0; i < alts.length; i++) {
-            Allele allele = new Allele(chr, pos, ref, alts[i]);
+            Allele allele = makeAllele(chr, pos, ref, alts[i]);
             allele.setRsId(getCurrentRsId(rsId));
             alleles.add(allele);
         }
         return alleles;
+    }
+
+    @NotNull
+    private Allele makeAllele(byte chr, int pos, String ref, String alt) {
+        AllelePosition allelePosition = AllelePosition.minimise(pos, ref, alt);
+        return new Allele(chr, allelePosition.getPos(), allelePosition.getRef(), allelePosition.getAlt());
     }
 
     /**
@@ -77,7 +81,7 @@ public abstract class VcfAlleleParser implements AlleleParser {
      */
     private String getCurrentRsId(String[] rsIds) {
         if (rsIds.length >= 1) {
-            return rsIds[0];
+            return rsIds[0].replaceFirst("~", "");
         }
         return ".";
     }

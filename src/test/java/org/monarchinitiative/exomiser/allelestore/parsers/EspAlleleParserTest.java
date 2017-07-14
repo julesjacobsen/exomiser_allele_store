@@ -71,9 +71,26 @@ public class EspAlleleParserTest {
         assertThat(allele.getChr(), equalTo(7));
         assertThat(allele.getPos(), equalTo(107167661));
         assertThat(allele.getRsId(), equalTo("."));
-        assertThat(allele.getRef(), equalTo("TAA"));
-        assertThat(allele.getAlt(), equalTo("TAAA"));
+        assertThat(allele.getRef(), equalTo("T"));
+        assertThat(allele.getAlt(), equalTo("TA"));
 //        assertThat(allele.getFrequencies().isEmpty(), is(true));
 
+    }
+
+    @Test
+    public void testMultiAlleleWithTildaPrefixedRsId() {
+        EspAlleleParser instance = new EspAlleleParser();
+        String line = "1\t116234024\t~rs151052987\tTA\tTAAA,TAA,T\t.\tPASS\tDBSNP=dbSNP_134;EA_AC=17,55,130,7976;AA_AC=17,217,55,3829;TAC=34,272,185,11805;MAF=2.47,7.018,3.9932;GTS=A1A1,A1A2,A1A3,A1R,A2A2,A2A3,A2R,A3A3,A3R,RR;EA_GTC=0,0,0,17,0,0,55,0,130,3887;AA_GTC=1,0,0,15,13,0,191,4,47,1788;GTC=1,0,0,32,13,0,246,4,177,5675;DP=25;GL=VANGL1;CP=0.0;CG=-3.2;AA=.;CA=.;EXOME_CHIP=no;GWAS_PUBMED=.;FG=NM_138959.2:utr-3,NM_138959.2:utr-3,NM_138959.2:utr-3,NM_001172412.1:utr-3,NM_001172412.1:utr-3,NM_001172412.1:utr-3,NM_00117^C2411.1:utr-3,NM_001172411.1:utr-3,NM_001172411.1:utr-3;HGVS_CDNA_VAR=NM_138959.2:c.*25del1,NM_138959.2:c.*24_*25insA,NM_138959.2:c.*24_*25insAA,NM_001172412.1:c.*25del1,NM_001172412.1:c.*24_*25insA,NM_001172412.1:c.*24_*25insAA,NM_001172411.1:c.*25del1,NM_001172411.1:c.*24_*25insA,NM_001172411.1:c.*24_*25insAA;HGVS_PROTEIN_VAR=.,.,.,.,.,.,.,.,.;CDS_SIZES=NM_138959.2:1575,NM_138959.2:1575,NM_138959.2:1575,NM_001172412.1:1575,NM_001172412.1:1575,NM_001172412.1:1575,NM_001172411.1:1569,NM_001172411.1:1569,NM_0";
+        List<Allele> alleles = instance.parseLine(line);
+
+        assertThat(alleles.size(), equalTo(3));
+        Allele allele = alleles.get(0);
+
+        System.out.println(allele);
+        assertThat(allele.getChr(), equalTo(1));
+        assertThat(allele.getPos(), equalTo(116234024));
+        assertThat(allele.getRsId(), equalTo("rs151052987"));
+        assertThat(allele.getRef(), equalTo("T"));
+        assertThat(allele.getAlt(), equalTo("TAA"));
     }
 }

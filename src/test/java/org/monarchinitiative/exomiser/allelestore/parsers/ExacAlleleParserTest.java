@@ -227,8 +227,8 @@ public class ExacAlleleParserTest {
         assertThat(allele2.getChr(), equalTo(2));
         assertThat(allele2.getPos(), equalTo(66667199));
         assertThat(allele2.getRsId(), equalTo("rs144159761"));
-        assertThat(allele2.getRef(), equalTo("GAA"));
-        assertThat(allele2.getAlt(), equalTo("GCTAA"));
+        assertThat(allele2.getRef(), equalTo("G"));
+        assertThat(allele2.getAlt(), equalTo("GCT"));
         Map<AlleleProperty, Float> frequencies2 = allele2.getValues();
 //        assertThat(frequencies2.field("EXAC_AFR", OType.DOUBLE), equalTo(0.0));
 //        assertThat(frequencies2.field("EXAC_AMR", OType.DOUBLE), equalTo(0.0));
