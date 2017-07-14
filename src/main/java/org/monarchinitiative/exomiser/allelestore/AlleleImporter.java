@@ -1,9 +1,6 @@
 package org.monarchinitiative.exomiser.allelestore;
 
-import com.orientechnologies.orient.client.remote.OServerAdmin;
-import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
 import org.apache.commons.vfs2.*;
-import org.apache.lucene.store.FSDirectory;
 import org.jetbrains.annotations.NotNull;
 import org.monarchinitiative.exomiser.allelestore.indexers.AlleleIndexer;
 import org.monarchinitiative.exomiser.allelestore.indexers.LuceneAlleleIndexer;
@@ -17,7 +14,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
@@ -45,7 +41,8 @@ public class AlleleImporter implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments applicationArguments) throws Exception {
 
-        //--loadDbSnp=C:/Users/hhx640/Downloads/00-All.vcf.gz --loadExac=C:/Users/hhx640/Downloads/ExAC.r0.3.1.sites.vep.vcf.gz --loadEsp=C:/Users/hhx640/Downloads/ESP6500SI-V2-SSA137.GRCh38-liftover.snps_indels.vcf.tar.gz
+        //--working-directory=
+        //--loadDbSnp=C:/Users/hhx640/Downloads/00-All.vcf.gz --loadExac=C:/Users/hhx640/Downloads/ExAC.r0.3.1.sites.vep.vcf.gz --loadEsp=C:/Users/hhx640/Downloads/ESP6500SI-V2-SSA137.GRCh38-liftover.snps_indels.vcf.tar.gz --out=exomiser_frequencies.allele
 
         if (applicationArguments.containsOption("loadExac")) {
             //--loadExac=C:/Users/hhx640/Downloads/ExAC.r0.3.1.sites.vep.vcf.gz
@@ -78,7 +75,7 @@ public class AlleleImporter implements ApplicationRunner {
         }
 
         if (applicationArguments.containsOption("loadDbNsfp")) {
-            //--loadDbNsfp=C:/Users/hhx640/Downloads/dbNSFPv3.3a.zip
+            //--loadDbNsfp=C:/Users/hhx640/Downloads/dbNSFPv3.4a.zip
             List<String> fileName = applicationArguments.getOptionValues("loadDbNsfp");
             if (fileName.isEmpty()) {
                 throw new IllegalArgumentException("Please specify the full system path to ESP ESP6500SI-V2-SSA137.GRCh38-liftover.snps_indels.vcf.tar.gz file");
@@ -107,7 +104,7 @@ public class AlleleImporter implements ApplicationRunner {
             logger.info("Running {} indexer", indexer);
             AlleleIndexer alleleIndexer = getAlleleIndexer(indexer, workingDir.resolve("lucene_alleles"));
             //Added 227000000 allele docs in 26 mins 5.35GB index
-            alleleIndexer.buildIndex(Paths.get("C:/Users/hhx640/Downloads/exomiser_all.allele"), workingDir.resolve("lucene_alleles"));
+            alleleIndexer.buildIndex(workingDir.resolve("exomiser_all.allele"), workingDir.resolve("lucene_alleles"));
         }
 
         logger.info("Done");
