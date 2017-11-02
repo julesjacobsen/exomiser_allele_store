@@ -2,8 +2,9 @@ package org.monarchinitiative.exomiser.allelestore.parsers;
 
 import org.junit.Test;
 import org.monarchinitiative.exomiser.allelestore.model.Allele;
+import org.monarchinitiative.exomiser.allelestore.model.AlleleProperty;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,11 +32,11 @@ public class EspAlleleParserTest {
         assertThat(allele.getRef(), equalTo("C"));
         assertThat(allele.getAlt(), equalTo("G"));
 
-        Map<String, Float> expectedFreqs = new HashMap<>();
-//        expectedFreqs.put("ESP_EA", 0.0116f);
-//        expectedFreqs.put("ESP_ALL", 0.0077f);
-//
-//        assertThat(allele.getFrequencies().entrySet(), containsInAnyOrder(expectedFreqs.entrySet()));
+        Map<AlleleProperty, Float> expectedFreqs = new EnumMap<>(AlleleProperty.class);
+        expectedFreqs.put(AlleleProperty.ESP_EA, 0.0116f);
+        expectedFreqs.put(AlleleProperty.ESP_ALL, 0.0077f);
+
+        assertThat(allele.getValues(), equalTo(expectedFreqs));
 
     }
 
@@ -54,8 +55,12 @@ public class EspAlleleParserTest {
         assertThat(allele.getRsId(), equalTo("."));
         assertThat(allele.getRef(), equalTo("GA"));
         assertThat(allele.getAlt(), equalTo("G"));
-//        assertThat(allele.getFrequencies().isEmpty(), is(true));
 
+        Map<AlleleProperty, Float> expectedFreqs = new EnumMap<>(AlleleProperty.class);
+        expectedFreqs.put(AlleleProperty.ESP_AA, 0.0469f);
+        expectedFreqs.put(AlleleProperty.ESP_ALL, 0.016f);
+
+        assertThat(allele.getValues(), equalTo(expectedFreqs));
     }
 
     @Test
@@ -73,8 +78,13 @@ public class EspAlleleParserTest {
         assertThat(allele.getRsId(), equalTo("."));
         assertThat(allele.getRef(), equalTo("T"));
         assertThat(allele.getAlt(), equalTo("TA"));
-//        assertThat(allele.getFrequencies().isEmpty(), is(true));
 
+        Map<AlleleProperty, Float> expectedFreqs = new EnumMap<>(AlleleProperty.class);
+        expectedFreqs.put(AlleleProperty.ESP_EA, 44.9781f);
+        expectedFreqs.put(AlleleProperty.ESP_AA, 47.7489f);
+        expectedFreqs.put(AlleleProperty.ESP_ALL, 45.9213f);
+
+        assertThat(allele.getValues(), equalTo(expectedFreqs));
     }
 
     @Test
