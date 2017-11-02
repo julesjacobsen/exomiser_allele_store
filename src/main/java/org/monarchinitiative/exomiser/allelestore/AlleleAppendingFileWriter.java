@@ -2,13 +2,14 @@ package org.monarchinitiative.exomiser.allelestore;
 
 import org.jetbrains.annotations.NotNull;
 import org.monarchinitiative.exomiser.allelestore.model.Allele;
-import org.monarchinitiative.exomiser.allelestore.model.AlleleProperty;
 import org.monarchinitiative.exomiser.allelestore.parsers.AlleleParser;
 import org.monarchinitiative.exomiser.allelestore.parsers.ExomiserAlleleParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -89,19 +90,11 @@ public class AlleleAppendingFileWriter {
 
     @NotNull
     private String makeInfoFields(Allele allele) {
-        String freqString = infoString(allele.getValues());
-        if (freqString.isEmpty()) {
+        String infoString = allele.generateInfoField();
+        if (infoString.isEmpty()) {
             return ".";
         }
-        return freqString;
-    }
-
-    private String infoString(Map<AlleleProperty, Float> values) {
-        StringJoiner stringJoiner = new StringJoiner(";");
-        for (Map.Entry<AlleleProperty, Float> value : values.entrySet()) {
-            stringJoiner.add(value.toString());
-        }
-        return stringJoiner.toString();
+        return infoString;
     }
 
     public long count() {
@@ -150,7 +143,7 @@ public class AlleleAppendingFileWriter {
                 List<Allele> alleles = alleleParser.parseLine(line);
                 for (Allele allele : alleles) {
                     alleleCount++;
-                    alleleStore.merge(allele.getId(), allele, mergeAlleles());
+                    alleleStore.merge(allele.generateKey(), allele, mergeAlleles());
                     if (alleleCount % 1000000 == 0) {
                         logger.info("Read and merged {} into {} alleles", alleleCount, alleleStore.size());
                     }

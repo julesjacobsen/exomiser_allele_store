@@ -2,9 +2,7 @@ package org.monarchinitiative.exomiser.allelestore;
 
 import org.apache.commons.vfs2.*;
 import org.jetbrains.annotations.NotNull;
-import org.monarchinitiative.exomiser.allelestore.indexers.AlleleIndexer;
-import org.monarchinitiative.exomiser.allelestore.indexers.LuceneAlleleIndexer;
-import org.monarchinitiative.exomiser.allelestore.indexers.OrientAlleleIndexer;
+import org.monarchinitiative.exomiser.allelestore.indexers.*;
 import org.monarchinitiative.exomiser.allelestore.model.Allele;
 import org.monarchinitiative.exomiser.allelestore.parsers.*;
 import org.slf4j.Logger;
@@ -16,11 +14,11 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
 
 /**
  * @author Jules Jacobsen <j.jacobsen@qmul.ac.uk>
@@ -102,9 +100,14 @@ public class AlleleImporter implements ApplicationRunner {
             }
             String indexer = indexOption.get(0);
             logger.info("Running {} indexer", indexer);
-            AlleleIndexer alleleIndexer = getAlleleIndexer(indexer, workingDir.resolve("lucene_alleles"));
-            //Added 227000000 allele docs in 26 mins 5.35GB index
-            alleleIndexer.buildIndex(workingDir.resolve("exomiser_all.allele"), workingDir.resolve("lucene_alleles"));
+            Path indexerDir = workingDir.resolve(indexer);
+            if (!indexerDir.toFile().exists()) {
+                Files.createDirectory(indexerDir);
+            }
+            AlleleIndexer alleleIndexer = getAlleleIndexer(indexer, indexerDir);
+            //Added 227,000,000 allele docs in 26 mins 5.35GB index
+            //todo make this configurable
+            alleleIndexer.buildIndex(workingDir.resolve("exomiser-all.vcf"), indexerDir);
         }
 
         logger.info("Done");
@@ -113,8 +116,12 @@ public class AlleleImporter implements ApplicationRunner {
     @NotNull
     private AlleleIndexer getAlleleIndexer(String indexer, Path indexPath) {
         switch (indexer) {
-            case "orient":
-                return new OrientAlleleIndexer();
+            case "mvStore":
+                return new MvStoreAlleleIndexer(indexPath);
+            case "mapDB":
+                return new MapDBAlleleIndexer(indexPath);
+            case "berkeley":
+                return new SleepyCatAlleleIndexer(indexPath);
             case "lucene":
             default:
                 return new LuceneAlleleIndexer(indexPath);

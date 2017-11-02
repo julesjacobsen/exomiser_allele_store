@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '1.4.2.RELEASE'
+		springBootVersion = '1.5.7.RELEASE'
 	}
 	repositories {
 		mavenCentral()
@@ -16,7 +16,7 @@ apply plugin: 'org.springframework.boot'
 
 jar {
 	baseName = 'exomiser_allele_store'
-	version = '0.0.2'
+	version = '0.0.3'
 }
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -24,17 +24,21 @@ targetCompatibility = 1.8
 repositories {
     mavenLocal()
 	mavenCentral()
+	maven {
+		url 'http://download.oracle.com/maven'
+	}
 }
 
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter')
 	compile('org.springframework.data:spring-data-commons')
-	compile('com.orientechnologies:orientdb-graphdb:2.2.13')
 	compile('org.apache.commons:commons-vfs2:2.0')
-	compile('org.mapdb:mapdb:3.0.2')
+	compile('org.mapdb:mapdb:3.0.5')
+	compile('com.h2database:h2:1.4.196')
 	compile('org.apache.lucene:lucene-core:6.6.0')
     compile('org.apache.lucene:lucene-queryparser:6.6.0')
+	compile('com.sleepycat:je:7.4.5')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
