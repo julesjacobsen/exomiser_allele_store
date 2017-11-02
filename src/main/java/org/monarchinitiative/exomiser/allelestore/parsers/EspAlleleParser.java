@@ -3,7 +3,10 @@ package org.monarchinitiative.exomiser.allelestore.parsers;
 import org.monarchinitiative.exomiser.allelestore.model.Allele;
 import org.monarchinitiative.exomiser.allelestore.model.AlleleProperty;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Jules Jacobsen <j.jacobsen@qmul.ac.uk>
@@ -32,7 +35,7 @@ public class EspAlleleParser extends VcfAlleleParser {
     }
 
     private Map<AlleleProperty, Float> parseMafField(String infoField) {
-        Map<AlleleProperty, Float> frequencies = new HashMap<>();
+        Map<AlleleProperty, Float> frequencies = new EnumMap<>(AlleleProperty.class);
         //MAF=44.9781,47.7489,45.9213
         String[] minorAlleleFreqs = infoField.substring(4).split(",");
         for (MAF_FIELD field : MAF_FIELD.values()) {

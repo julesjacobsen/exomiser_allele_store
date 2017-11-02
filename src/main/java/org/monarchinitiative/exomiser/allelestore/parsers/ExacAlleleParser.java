@@ -5,7 +5,10 @@ import org.monarchinitiative.exomiser.allelestore.model.AlleleProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Jules Jacobsen <j.jacobsen@qmul.ac.uk>
@@ -55,7 +58,7 @@ public class ExacAlleleParser extends VcfAlleleParser {
     }
 
     private Map<AlleleProperty, Float> calculateAllelePopulationFrequencies(Map<String, String> alleleCounts, int i) {
-        Map<AlleleProperty, Float> allelePopFreqs = new HashMap<>();
+        Map<AlleleProperty, Float> allelePopFreqs = new EnumMap<>(AlleleProperty.class);
         for (EXAC_FIELD field : EXAC_FIELD.values()) {
             int alleleCount = parseAlleleCount(alleleCounts.get(field.AC), i);
             if (alleleCount != 0) {
