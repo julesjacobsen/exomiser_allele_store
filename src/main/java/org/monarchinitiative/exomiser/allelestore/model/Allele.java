@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * @author Jules Jacobsen <j.jacobsen@qmul.ac.uk>
@@ -62,8 +63,24 @@ public class Allele implements Comparable<Allele> {
         return values.get(key);
     }
 
-    public String getId() {
-        return chr + "-" + pos + "-" + ref + "-" + alt;
+    public String generateKey() {
+        StringJoiner stringJoiner = new StringJoiner("-");
+        stringJoiner.add(String.valueOf(chr));
+        stringJoiner.add(String.valueOf(pos));
+        stringJoiner.add(ref);
+        stringJoiner.add(alt);
+        return stringJoiner.toString();
+    }
+
+    public String generateInfoField() {
+        StringJoiner stringJoiner = new StringJoiner(";");
+        if (!rsId.equals(".")) {
+            stringJoiner.add("RS=" + rsId);
+        }
+        for (Map.Entry<AlleleProperty, Float> value : values.entrySet()) {
+            stringJoiner.add(value.toString());
+        }
+        return stringJoiner.toString();
     }
 
     @Override
@@ -107,4 +124,5 @@ public class Allele implements Comparable<Allele> {
                 ", values=" + values +
                 '}';
     }
+
 }

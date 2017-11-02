@@ -4,12 +4,11 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Jules Jacobsen <j.jacobsen@qmul.ac.uk>
@@ -46,9 +45,9 @@ public class AlleleTest {
     }
 
     @Test
-    public void testId() {
+    public void testGenerateKey() {
         Allele instance = new Allele(1, 123456, "A", "C");
-        assertThat(instance.getId(), equalTo("1-123456-A-C"));
+        assertThat(instance.generateKey(), equalTo("1-123456-A-C"));
     }
 
     @Test
@@ -56,6 +55,35 @@ public class AlleleTest {
         Allele instance = new Allele(1, 123456, "A", "C");
         instance.setRsId(".");
         assertThat(instance.getRsId(), equalTo("."));
+    }
+
+    @Test
+    public void testGenerateInfoFieldNoRsId() {
+        Allele instance = new Allele(1, 123456, "A", "C");
+        assertThat(instance.generateInfoField(), equalTo(""));
+    }
+
+    @Test
+    public void testGenerateInfoFieldRsIdEmpty() {
+        Allele instance = new Allele(1, 123456, "A", "C");
+        instance.setRsId(".");
+        assertThat(instance.generateInfoField(), equalTo(""));
+    }
+
+    @Test
+    public void testGenerateInfoFieldWithRsId() {
+        Allele instance = new Allele(1, 123456, "A", "C");
+        instance.setRsId("rs23456");
+        assertThat(instance.generateInfoField(), equalTo("RS=rs23456"));
+    }
+
+    @Test
+    public void testGenerateInfoFieldWithRsIdKgEsp() {
+        Allele instance = new Allele(1, 123456, "A", "C");
+        instance.setRsId("rs23456");
+        instance.addValue(AlleleProperty.ESP_EA, 0.03f);
+        instance.addValue(AlleleProperty.KG, 0.12f);
+        assertThat(instance.generateInfoField(), equalTo("RS=rs23456;KG=0.12;ESP_EA=0.03"));
     }
 
     @Test
