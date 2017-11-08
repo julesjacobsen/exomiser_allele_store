@@ -1,4 +1,4 @@
-package org.monarchinitiative.exomiser.allelestore;
+package org.monarchinitiative.exomiser.allelestore.writers;
 
 import org.jetbrains.annotations.NotNull;
 import org.monarchinitiative.exomiser.allelestore.model.Allele;
@@ -20,21 +20,21 @@ import java.util.function.Consumer;
 
 /**
  * Creates a set of 25 temp_chr_N.allele files where N is the chromosome numbered from 1-25. It will append
- * any {@link Allele} added via the {@link #save(Allele)} method to the corresponding chromosome temp file.
- *
+ * any {@link Allele} added via the {@link #write(Allele)} method to the corresponding chromosome temp file.
+ * <p>
  * When all the resources have been parsed the {@link #mergeToFile(String)} method should be called which will produce a
  * VCF formatted file (without the header) of sorted, non-redundant alleles.
- *
+ * <p>
  * Currently these {@link Allele} are all held in RAM. Chromosome 1 contains ~20 million alleles when the ESP, ExAC,
  * dbSNP and dbNSFP resources are combined, this requires a little under 10GB RAM.
  *
  * @author Jules Jacobsen <j.jacobsen@qmul.ac.uk>
  */
-public class AlleleAppendingFileWriter {
+public class AlleleAppendingFileWriter implements AlleleWriter {
 
     private static final Logger logger = LoggerFactory.getLogger(AlleleAppendingFileWriter.class);
     //NUM_CHROMOSOMES is set to 25 (1-22 + X, Y, M) + 1 so that the zero-based for loops create a 1-based chr file.
-    public static final int NUM_CHROMOSOMES = 25 + 1;
+    private static final int NUM_CHROMOSOMES = 25 + 1;
 
     private final Path workingDir;
     private final Map<Integer, BufferedWriter> bufferedWriterMap;
@@ -53,9 +53,10 @@ public class AlleleAppendingFileWriter {
             Path path = workingDir.resolve("temp_chr" + i + ".allele");
             chromosomePaths.put(i, path);
             try {
-                path.toFile().createNewFile();
-                BufferedWriter bufferedWriter = Files.newBufferedWriter(path, StandardOpenOption.APPEND);
-                writers.put(i, bufferedWriter);
+                if (path.toFile().createNewFile()) {
+                    BufferedWriter bufferedWriter = Files.newBufferedWriter(path, StandardOpenOption.APPEND);
+                    writers.put(i, bufferedWriter);
+                }
             } catch (IOException e) {
                 logger.error("{}", e);
             }
@@ -63,7 +64,8 @@ public class AlleleAppendingFileWriter {
         return writers;
     }
 
-    public void save(Allele allele) {
+    @Override
+    public void write(Allele allele) {
         BufferedWriter chromosomeFile = bufferedWriterMap.get(allele.getChr());
         String alleleString = toLine(allele);
         try {
@@ -84,7 +86,7 @@ public class AlleleAppendingFileWriter {
         stringJoiner.add(allele.getAlt());
         stringJoiner.add(".");
         stringJoiner.add(".");
-        stringJoiner.add(makeInfoFields(allele)+ "\n");
+        stringJoiner.add(makeInfoFields(allele) + "\n");
         return stringJoiner.toString();
     }
 

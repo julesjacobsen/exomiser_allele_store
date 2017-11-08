@@ -16,7 +16,7 @@ apply plugin: 'org.springframework.boot'
 
 jar {
 	baseName = 'exomiser_allele_store'
-	version = '0.0.3'
+	version = '0.0.4'
 }
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

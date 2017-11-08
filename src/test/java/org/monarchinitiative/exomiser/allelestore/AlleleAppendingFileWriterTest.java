@@ -7,6 +7,7 @@ import org.junit.rules.TemporaryFolder;
 import org.monarchinitiative.exomiser.allelestore.model.Allele;
 import org.monarchinitiative.exomiser.allelestore.model.AlleleProperty;
 import org.monarchinitiative.exomiser.allelestore.parsers.ExomiserAlleleParser;
+import org.monarchinitiative.exomiser.allelestore.writers.AlleleAppendingFileWriter;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +18,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Jules Jacobsen <j.jacobsen@qmul.ac.uk>
@@ -29,7 +30,7 @@ public class AlleleAppendingFileWriterTest {
     @NotNull
     private AlleleAppendingFileWriter getInstanceWithSavedAlleles(Iterable<Allele> alleles) throws IOException {
         AlleleAppendingFileWriter instance = new AlleleAppendingFileWriter(tmpFolder.newFolder().toPath());
-        alleles.forEach(instance::save);
+        alleles.forEach(instance::write);
         return instance;
     }
 
